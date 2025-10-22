@@ -1,10 +1,27 @@
+"use client";
+
+import { useCallback } from "react";
 import { AutomationSection } from "@/components/AutomationSection";
 import { BenefitsSection } from "@/components/BenefitsSection";
+import { ChatKitPanel, type FactAction } from "@/components/ChatKitPanel";
 import { HeroSection } from "@/components/HeroSection";
 import { HowItWorksSection } from "@/components/HowItWorksSection";
+import { useColorScheme } from "@/hooks/useColorScheme";
 
 export default function Home() {
-  const workflowId = process.env.NEXT_PUBLIC_WORKFLOW_ID ?? "";
+  const { scheme, setScheme } = useColorScheme();
+
+  const handleWidgetAction = useCallback(async (action: FactAction) => {
+    if (process.env.NODE_ENV !== "production") {
+      console.info("[ChatKitPanel] widget action", action);
+    }
+  }, []);
+
+  const handleResponseEnd = useCallback(() => {
+    if (process.env.NODE_ENV !== "production") {
+      console.debug("[ChatKitPanel] response end");
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#f7f6f3] text-slate-900">
@@ -19,11 +36,12 @@ export default function Home() {
               Try a Digital Employee
             </h2>
             <div className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
-              <openai-chat
-                agent={workflowId}
-                theme="light"
-                style={{ width: "100%", height: "600px", borderRadius: "12px" }}
-              ></openai-chat>
+              <ChatKitPanel
+                theme={scheme}
+                onWidgetAction={handleWidgetAction}
+                onResponseEnd={handleResponseEnd}
+                onThemeRequest={setScheme}
+              />
             </div>
           </div>
         </div>
