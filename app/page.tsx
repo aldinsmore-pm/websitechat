@@ -24,18 +24,21 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#f7f6f3] text-slate-900">
+    <div className="min-h-screen bg-[#F7F6F2] text-[#111111]">
       <HeroSection />
       <BenefitsSection />
       <AutomationSection />
       <HowItWorksSection />
-      <section className="bg-[#f7f6f3]">
-        <div className="mx-auto max-w-6xl px-6 py-24 lg:py-28">
-          <div className="space-y-6">
-            <h2 className="text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
-              Try a Digital Employee
-            </h2>
-            <div className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
+      <section id="chat" className="bg-[#F7F6F2]">
+        <div className="mx-auto max-w-[1200px] px-6 py-24 lg:py-28">
+          <div className="space-y-10">
+            <div className="max-w-2xl space-y-4">
+              <h2 className="text-[36px] font-bold leading-tight text-[#0B1B34]">Try a Digital Employee</h2>
+              <p className="text-base leading-relaxed text-[#333333]">
+                Launch the ChatKit experience to see how a digital employee fields questions, completes tasks, and hands back the context your team needs.
+              </p>
+            </div>
+            <div className="min-h-[60vh] rounded-2xl border border-[#E5E5E5] bg-white p-6 shadow-[0_4px_12px_rgba(0,0,0,0.05)]">
               <ChatKitPanel
                 theme={scheme}
                 onWidgetAction={handleWidgetAction}

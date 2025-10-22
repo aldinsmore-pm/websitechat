@@ -1,53 +1,37 @@
 const benefits = [
   {
     title: "Hours saved weekly",
-    description: "Every person gets time back to focus on what matters.",
+    description: "Let our digital employees take on repetitive tasks so your team has more time.",
   },
   {
     title: "Always working",
-    description: "Handles tasks 24/7, including nights and weekends.",
+    description: "Our digital employees never sleep, making sure your business runs around the clock.",
   },
   {
     title: "Fewer interruptions",
-    description: "More time for deep thinking and creative work.",
-  },
-  {
-    title: "Happier employees",
-    description:
-      "Save human brains from mind-numbing boredom. Let them work on what matters.",
-  },
-  {
-    title: "Better economics",
-    description:
-      "Digital employees cost less than overtime and burnout. Better ROI, lower turnover.",
-  },
-  {
-    title: "Instant scale",
-    description:
-      "Add capacity instantly without hiring delays. Scale up or down as needed.",
+    description: "By off-loading tasks to digital employees, your team can maintain focus and flow.",
   },
 ];
 
 export function BenefitsSection() {
   return (
-    <section className="bg-[#f7f6f3]">
-      <div className="mx-auto max-w-6xl px-6 py-24 lg:py-28">
-        <div className="space-y-6">
-          <h2 className="text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
-            Why build Digital Employees?
-          </h2>
-          <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-            {benefits.map((benefit) => (
+    <section className="bg-[#F7F6F2]">
+      <div className="mx-auto max-w-[1200px] px-6 py-24 lg:py-28">
+        <div className="space-y-10">
+          <div className="max-w-2xl">
+            <h2 className="text-[32px] font-bold leading-tight text-[#0B1B34]">Why build Digital Employees?</h2>
+          </div>
+          <div className="grid gap-6 md:grid-cols-3">
+            {benefits.map((benefit, index) => (
               <article
                 key={benefit.title}
-                className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-shadow duration-200 hover:shadow-md"
+                className="flex h-full flex-col rounded-2xl border border-[#E5E5E5] bg-white p-8 shadow-[0_4px_12px_rgba(0,0,0,0.05)]"
               >
-                <h3 className="text-lg font-semibold text-slate-900">
-                  {benefit.title}
-                </h3>
-                <p className="mt-3 text-sm leading-relaxed text-slate-600">
-                  {benefit.description}
-                </p>
+                <span className="mb-6 inline-flex h-12 w-12 items-center justify-center rounded-full bg-[#0B1B34] text-base font-semibold text-white">
+                  {index + 1}
+                </span>
+                <h3 className="text-xl font-medium text-[#111111]">{benefit.title}</h3>
+                <p className="mt-4 text-base leading-relaxed text-[#333333]">{benefit.description}</p>
               </article>
             ))}
           </div>
