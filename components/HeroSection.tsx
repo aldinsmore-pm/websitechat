@@ -1,5 +1,3 @@
-import Image from "next/image";
-
 export function HeroSection() {
   return (
     <section className="bg-[#F7F6F2]">
@@ -18,18 +16,6 @@ export function HeroSection() {
             >
               Email us
             </a>
-          </div>
-        </div>
-        <div className="w-full max-w-xl">
-          <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-[#E5E5E5] bg-white shadow-[0_4px_12px_rgba(0,0,0,0.05)]">
-            <Image
-              src="/docs/workflow.jpg"
-              alt="Illustration of a digital employee orchestrating automated workflows"
-              fill
-              priority
-              sizes="(min-width: 1024px) 420px, 100vw"
-              className="object-cover"
-            />
           </div>
         </div>
       </div>
