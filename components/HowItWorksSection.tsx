@@ -9,8 +9,8 @@ const steps = [
       "We build custom automations and AI-powered workflows to streamline your operations.",
   },
   {
-    title: "You get your time back",
-    description: "That’s it. That’s the whole thing.",
+    title: "You get your time back.",
+    description: "That's it. That's the whole thing.",
   },
 ];
 
@@ -20,7 +20,7 @@ export function HowItWorksSection() {
       <div className="mx-auto max-w-[1200px] px-6 py-24 lg:py-28">
         <div className="space-y-10">
           <div className="max-w-2xl">
-            <h2 className="text-[32px] font-bold leading-tight text-[#0B1B34]">How it works</h2>
+            <h2 className="text-[32px] font-bold leading-tight text-[#0B1B34]">HOW IT WORKS</h2>
           </div>
           <ol className="grid gap-6 md:grid-cols-3">
             {steps.map((step, index) => (

@@ -4,10 +4,10 @@ export function HeroSection() {
       <div className="mx-auto flex max-w-[1200px] flex-col gap-16 px-6 py-28 lg:flex-row lg:items-center lg:justify-between lg:gap-20">
         <div className="max-w-2xl space-y-8 text-center lg:text-left">
           <h1 className="text-[48px] font-bold leading-tight text-[#0B1B34] sm:text-[56px]">
-            We make Digital Employees
+            We make Digital Employees.
           </h1>
           <p className="text-xl font-normal leading-8 text-[#333333]">
-            We take complex AI & automation and use it to do the boring tasks so your team can focus on the important stuff.
+            We help companies use AI to do the boring jobs so their team can focus on the interesting stuff that moves the ball forward.
           </p>
           <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center lg:items-center lg:justify-start">
             <a

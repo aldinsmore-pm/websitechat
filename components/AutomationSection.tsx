@@ -37,7 +37,17 @@ const automationCategories = [
   {
     icon: "👥",
     title: "HR & Recruiting",
-    description: "Screen résumés. Schedule interviews. Answer policy questions.",
+    description: "Screen resumes. Schedule interviews. Answer policy questions.",
+  },
+  {
+    icon: "📈",
+    title: "Sales Ops",
+    description: "Qualify leads. Update CRM. Generate proposals.",
+  },
+  {
+    icon: "📝",
+    title: "Documentation",
+    description: "Meeting notes. Process docs. Knowledge base updates.",
   },
 ];
 
@@ -47,10 +57,7 @@ export function AutomationSection() {
       <div className="mx-auto max-w-[1200px] px-6 py-24 lg:py-28">
         <div className="space-y-10">
           <div className="max-w-2xl space-y-4">
-            <h2 className="text-[32px] font-bold leading-tight text-[#0B1B34]">Where digital employees deliver impact</h2>
-            <p className="text-base leading-relaxed text-[#333333]">
-              From operations to finance, our automations keep the work flowing while your specialists focus on strategic initiatives.
-            </p>
+            <h2 className="text-[32px] font-bold leading-tight text-[#0B1B34]">WHAT WE AUTOMATE</h2>
           </div>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {automationCategories.map((item) => (

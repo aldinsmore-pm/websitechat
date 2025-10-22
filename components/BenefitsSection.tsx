@@ -1,15 +1,27 @@
 const benefits = [
   {
     title: "Hours saved weekly",
-    description: "Let our digital employees take on repetitive tasks so your team has more time.",
+    description: "Every person gets time back to focus on what matters.",
   },
   {
     title: "Always working",
-    description: "Our digital employees never sleep, making sure your business runs around the clock.",
+    description: "Handles tasks 24/7, including nights and weekends.",
   },
   {
     title: "Fewer interruptions",
-    description: "By off-loading tasks to digital employees, your team can maintain focus and flow.",
+    description: "More time for deep thinking and creative work.",
+  },
+  {
+    title: "Happier employees",
+    description: "Save human brains from mind-numbing boredom. Let them work on what matters.",
+  },
+  {
+    title: "Better economics",
+    description: "Digital employees cost less than overtime and burnout. Better ROI, lower turnover.",
+  },
+  {
+    title: "Instant scale",
+    description: "Add capacity instantly without hiring delays. Scale up or down as needed.",
   },
 ];
 
@@ -19,7 +31,7 @@ export function BenefitsSection() {
       <div className="mx-auto max-w-[1200px] px-6 py-24 lg:py-28">
         <div className="space-y-10">
           <div className="max-w-2xl">
-            <h2 className="text-[32px] font-bold leading-tight text-[#0B1B34]">Why build Digital Employees?</h2>
+            <h2 className="text-[32px] font-bold leading-tight text-[#0B1B34]">WHY BUILD DIGITAL EMPLOYEES?</h2>
           </div>
           <div className="grid gap-6 md:grid-cols-3">
             {benefits.map((benefit, index) => (
