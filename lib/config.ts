@@ -7,8 +7,18 @@ export const CREATE_SESSION_ENDPOINT = "/api/create-session";
 
 export const STARTER_PROMPTS: StartScreenPrompt[] = [
   {
-    label: "What can you do?",
-    prompt: "What can you do?",
+    label: "Why build Digital Employees?",
+    prompt: "Why build Digital Employees?",
+    icon: "circle-question",
+  },
+  {
+    label: "Where do Digital Employees deliver impact?",
+    prompt: "Where do Digital Employees deliver impact?",
+    icon: "circle-question",
+  },
+  {
+    label: "How does it work?",
+    prompt: "How does it work?",
     icon: "circle-question",
   },
 ];
