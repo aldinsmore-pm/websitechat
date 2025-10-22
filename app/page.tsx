@@ -3,8 +3,11 @@
 import { useCallback } from "react";
 import { AutomationSection } from "@/components/AutomationSection";
 import { BenefitsSection } from "@/components/BenefitsSection";
+import { CaseStudySection } from "@/components/CaseStudySection";
+import { CurrentWorkSection } from "@/components/CurrentWorkSection";
 import { ChatKitPanel, type FactAction } from "@/components/ChatKitPanel";
 import { HeroSection } from "@/components/HeroSection";
+import { HighValueWorkSection } from "@/components/HighValueWorkSection";
 import { HowItWorksSection } from "@/components/HowItWorksSection";
 import { useColorScheme } from "@/hooks/useColorScheme";
 
@@ -27,6 +30,9 @@ export default function Home() {
     <div className="min-h-screen bg-[#F7F6F2] text-[#111111]">
       <HeroSection />
       <BenefitsSection />
+      <CaseStudySection />
+      <CurrentWorkSection />
+      <HighValueWorkSection />
       <AutomationSection />
       <HowItWorksSection />
       <section id="chat" className="bg-[#F7F6F2]">
