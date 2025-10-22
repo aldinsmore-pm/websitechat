@@ -43,23 +43,26 @@ const automationCategories = [
 
 export function AutomationSection() {
   return (
-    <section className="bg-[#f7f6f3]">
-      <div className="mx-auto max-w-6xl px-6 py-24 lg:py-28">
-        <div className="space-y-6">
-          <h2 className="text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
-            What we automate
-          </h2>
+    <section className="bg-[#F7F6F2]">
+      <div className="mx-auto max-w-[1200px] px-6 py-24 lg:py-28">
+        <div className="space-y-10">
+          <div className="max-w-2xl space-y-4">
+            <h2 className="text-[32px] font-bold leading-tight text-[#0B1B34]">Where digital employees deliver impact</h2>
+            <p className="text-base leading-relaxed text-[#333333]">
+              From operations to finance, our automations keep the work flowing while your specialists focus on strategic initiatives.
+            </p>
+          </div>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {automationCategories.map((item) => (
               <article
                 key={item.title}
-                className="flex h-full flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-shadow duration-200 hover:shadow-md"
+                className="flex h-full flex-col gap-4 rounded-2xl border border-[#E5E5E5] bg-white p-8 shadow-[0_4px_12px_rgba(0,0,0,0.05)]"
               >
-                <div className="text-2xl" aria-hidden>
+                <div className="text-3xl" aria-hidden>
                   {item.icon}
                 </div>
-                <h3 className="text-lg font-semibold text-slate-900">{item.title}</h3>
-                <p className="text-sm leading-relaxed text-slate-600">{item.description}</p>
+                <h3 className="text-xl font-medium text-[#111111]">{item.title}</h3>
+                <p className="text-base leading-relaxed text-[#333333]">{item.description}</p>
               </article>
             ))}
           </div>
