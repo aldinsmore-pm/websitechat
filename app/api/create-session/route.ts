@@ -1,14 +1,15 @@
-import { WORKFLOW_ID } from "@/lib/config";
+import { ATTACHMENT_ACCEPT, WORKFLOW_ID } from "@/lib/config";
 
 export const runtime = "edge";
 
-interface ChatKitFeatureToggle {
-  enabled?: boolean;
+interface ChatKitConfiguration {
+  file_upload?: ChatKitFileUploadConfiguration;
+  [key: string]: unknown;
 }
 
-interface ChatKitConfiguration {
-  file_upload?: ChatKitFeatureToggle;
-  [key: string]: unknown;
+interface ChatKitFileUploadConfiguration {
+  enabled?: boolean;
+  accept?: Record<string, string[]>;
 }
 
 interface CreateSessionRequestBody {
@@ -156,26 +157,15 @@ function normalizeChatKitConfiguration(
     ...(configuration ?? {}),
   };
 
-  normalized.file_upload = normalizeChatKitFeature(
-    configuration?.file_upload,
-    true
-  );
-
-  return normalized;
-}
-
-function normalizeChatKitFeature(
-  feature: ChatKitFeatureToggle | null | undefined,
-  defaultEnabled: boolean
-): ChatKitFeatureToggle {
-  const normalized: ChatKitFeatureToggle = {
-    ...(feature ?? {}),
+  const fileUpload = configuration?.file_upload ?? {};
+  normalized.file_upload = {
+    ...fileUpload,
+    enabled:
+      fileUpload.enabled === undefined
+        ? true
+        : Boolean(fileUpload.enabled),
+    accept: fileUpload.accept ?? ATTACHMENT_ACCEPT,
   };
-
-  normalized.enabled =
-    feature?.enabled === undefined
-      ? defaultEnabled
-      : Boolean(feature.enabled);
 
   return normalized;
 }
