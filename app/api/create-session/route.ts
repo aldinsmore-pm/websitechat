@@ -8,7 +8,6 @@ interface ChatKitFeatureToggle {
 
 interface ChatKitConfiguration {
   file_upload?: ChatKitFeatureToggle;
-  response_downloads?: ChatKitFeatureToggle;
   [key: string]: unknown;
 }
 
@@ -159,10 +158,6 @@ function normalizeChatKitConfiguration(
 
   normalized.file_upload = normalizeChatKitFeature(
     configuration?.file_upload,
-    true
-  );
-  normalized.response_downloads = normalizeChatKitFeature(
-    configuration?.response_downloads,
     true
   );
 
