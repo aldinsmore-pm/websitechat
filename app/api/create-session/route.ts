@@ -2,15 +2,21 @@ import { WORKFLOW_ID } from "@/lib/config";
 
 export const runtime = "edge";
 
+interface ChatKitFeatureToggle {
+  enabled?: boolean;
+}
+
+interface ChatKitConfiguration {
+  file_upload?: ChatKitFeatureToggle;
+  response_downloads?: ChatKitFeatureToggle;
+  [key: string]: unknown;
+}
+
 interface CreateSessionRequestBody {
   workflow?: { id?: string | null } | null;
   scope?: { user_id?: string | null } | null;
   workflowId?: string | null;
-  chatkit_configuration?: {
-    file_upload?: {
-      enabled?: boolean;
-    };
-  };
+  chatkit_configuration?: ChatKitConfiguration;
 }
 
 const DEFAULT_CHATKIT_BASE = "https://api.openai.com";
@@ -42,6 +48,9 @@ export async function POST(request: Request): Promise<Response> {
     sessionCookie = resolvedSessionCookie;
     const resolvedWorkflowId =
       parsedBody?.workflow?.id ?? parsedBody?.workflowId ?? WORKFLOW_ID;
+    const chatkitConfiguration = normalizeChatKitConfiguration(
+      parsedBody?.chatkit_configuration
+    );
 
     if (process.env.NODE_ENV !== "production") {
       console.info("[create-session] handling request", {
@@ -71,12 +80,7 @@ export async function POST(request: Request): Promise<Response> {
       body: JSON.stringify({
         workflow: { id: resolvedWorkflowId },
         user: userId,
-        chatkit_configuration: {
-          file_upload: {
-            enabled:
-              parsedBody?.chatkit_configuration?.file_upload?.enabled ?? false,
-          },
-        },
+        chatkit_configuration: chatkitConfiguration,
       }),
     });
 
@@ -144,6 +148,41 @@ function methodNotAllowedResponse(): Response {
     status: 405,
     headers: { "Content-Type": "application/json" },
   });
+}
+
+function normalizeChatKitConfiguration(
+  configuration: ChatKitConfiguration | null | undefined
+): ChatKitConfiguration {
+  const normalized: ChatKitConfiguration = {
+    ...(configuration ?? {}),
+  };
+
+  normalized.file_upload = normalizeChatKitFeature(
+    configuration?.file_upload,
+    true
+  );
+  normalized.response_downloads = normalizeChatKitFeature(
+    configuration?.response_downloads,
+    true
+  );
+
+  return normalized;
+}
+
+function normalizeChatKitFeature(
+  feature: ChatKitFeatureToggle | null | undefined,
+  defaultEnabled: boolean
+): ChatKitFeatureToggle {
+  const normalized: ChatKitFeatureToggle = {
+    ...(feature ?? {}),
+  };
+
+  normalized.enabled =
+    feature?.enabled === undefined
+      ? defaultEnabled
+      : Boolean(feature.enabled);
+
+  return normalized;
 }
 
 async function resolveUserId(request: Request): Promise<{
