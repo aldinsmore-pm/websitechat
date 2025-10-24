@@ -1,14 +1,5 @@
 import { ColorScheme, StartScreenPrompt, ThemeOption } from "@openai/chatkit";
 
-export const ATTACHMENT_ACCEPT: Record<string, string[]> = {
-  "image/*": [".png", ".jpg", ".jpeg", ".gif", ".webp"],
-  "text/csv": [".csv"],
-  "application/vnd.ms-excel": [".xls"],
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
-    ".xlsx",
-  ],
-};
-
 export const WORKFLOW_ID =
   process.env.NEXT_PUBLIC_CHATKIT_WORKFLOW_ID?.trim() ?? "";
 

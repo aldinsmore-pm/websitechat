@@ -1,4 +1,4 @@
-import { ATTACHMENT_ACCEPT, WORKFLOW_ID } from "@/lib/config";
+import { WORKFLOW_ID } from "@/lib/config";
 
 export const runtime = "edge";
 
@@ -9,7 +9,6 @@ interface ChatKitConfiguration {
 
 interface ChatKitFileUploadConfiguration {
   enabled?: boolean;
-  accept?: Record<string, string[]>;
 }
 
 interface CreateSessionRequestBody {
@@ -164,7 +163,6 @@ function normalizeChatKitConfiguration(
       fileUpload.enabled === undefined
         ? true
         : Boolean(fileUpload.enabled),
-    accept: fileUpload.accept ?? ATTACHMENT_ACCEPT,
   };
 
   return normalized;

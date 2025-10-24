@@ -9,7 +9,6 @@ import {
   CREATE_SESSION_ENDPOINT,
   WORKFLOW_ID,
   getThemeConfig,
-  ATTACHMENT_ACCEPT,
 } from "@/lib/config";
 import { ErrorOverlay } from "./ErrorOverlay";
 import type { ColorScheme } from "@/hooks/useColorScheme";
@@ -197,7 +196,6 @@ export function ChatKitPanel({
               // enable attachments
               file_upload: {
                 enabled: true,
-                accept: ATTACHMENT_ACCEPT,
               },
             },
           }),
@@ -278,7 +276,6 @@ export function ChatKitPanel({
       attachments: {
         // Enable attachments
         enabled: true,
-        accept: ATTACHMENT_ACCEPT,
       },
     },
     threadItemActions: {
