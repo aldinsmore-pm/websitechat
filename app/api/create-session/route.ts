@@ -1,4 +1,4 @@
-import { ATTACHMENT_ACCEPT, WORKFLOW_ID } from "@/lib/config";
+import { WORKFLOW_ID } from "@/lib/config";
 
 export const runtime = "edge";
 
@@ -158,13 +158,15 @@ function normalizeChatKitConfiguration(
   };
 
   const fileUpload = configuration?.file_upload ?? {};
+  const { accept: _unusedAccept, ...restFileUpload } = fileUpload;
+  void _unusedAccept;
+
   normalized.file_upload = {
-    ...fileUpload,
+    ...restFileUpload,
     enabled:
       fileUpload.enabled === undefined
         ? true
         : Boolean(fileUpload.enabled),
-    accept: fileUpload.accept ?? ATTACHMENT_ACCEPT,
   };
 
   return normalized;
