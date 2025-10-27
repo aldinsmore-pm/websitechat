@@ -9,7 +9,6 @@ interface ChatKitConfiguration {
 
 interface ChatKitFileUploadConfiguration {
   enabled?: boolean;
-  accept?: Record<string, string[]>;
 }
 
 interface CreateSessionRequestBody {
