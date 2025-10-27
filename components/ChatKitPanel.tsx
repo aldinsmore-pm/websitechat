@@ -197,7 +197,6 @@ export function ChatKitPanel({
               // enable attachments
               file_upload: {
                 enabled: true,
-                accept: ATTACHMENT_ACCEPT,
               },
             },
           }),
