@@ -10,6 +10,7 @@ import {
   WORKFLOW_ID,
   getThemeConfig,
   ATTACHMENT_ACCEPT,
+  HOSTED_COMPOSER_ATTACHMENTS,
 } from "@/lib/config";
 import { ErrorOverlay } from "./ErrorOverlay";
 import type { ColorScheme } from "@/hooks/useColorScheme";
@@ -275,13 +276,7 @@ export function ChatKitPanel({
     },
     composer: {
       placeholder: PLACEHOLDER_INPUT,
-      attachments: {
-        // Enable hosted file uploads with CSV/XLSX support
-        enabled: true,
-        uploadStrategy: { type: "hosted" },
-        maxSize: 50 * 1024 * 1024,
-        accept: ATTACHMENT_ACCEPT,
-      },
+      attachments: HOSTED_COMPOSER_ATTACHMENTS,
     },
     threadItemActions: {
       feedback: false,
