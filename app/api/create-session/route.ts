@@ -1,4 +1,8 @@
-import { WORKFLOW_ID } from "@/lib/config";
+import {
+  ATTACHMENT_ACCEPT,
+  ATTACHMENT_MAX_SIZE_BYTES,
+  WORKFLOW_ID,
+} from "@/lib/config";
 
 export const runtime = "edge";
 
@@ -70,6 +74,18 @@ export async function POST(request: Request): Promise<Response> {
 
     const apiBase = process.env.CHATKIT_API_BASE ?? DEFAULT_CHATKIT_BASE;
     const url = `${apiBase}/v1/chatkit/sessions`;
+    const sessionCreateBody = {
+      workflow: { id: resolvedWorkflowId },
+      user: userId,
+      chatkit_configuration: chatkitConfiguration,
+      file_upload: {
+        enabled: chatkitConfiguration?.file_upload?.enabled ?? true,
+        accept: ATTACHMENT_ACCEPT,
+        max_file_size: ATTACHMENT_MAX_SIZE_BYTES,
+      },
+      response_downloads: { enabled: true },
+    };
+
     const upstreamResponse = await fetch(url, {
       method: "POST",
       headers: {
@@ -77,11 +93,7 @@ export async function POST(request: Request): Promise<Response> {
         Authorization: `Bearer ${openaiApiKey}`,
         "OpenAI-Beta": "chatkit_beta=v1",
       },
-      body: JSON.stringify({
-        workflow: { id: resolvedWorkflowId },
-        user: userId,
-        chatkit_configuration: chatkitConfiguration,
-      }),
+      body: JSON.stringify(sessionCreateBody),
     });
 
     if (process.env.NODE_ENV !== "production") {
