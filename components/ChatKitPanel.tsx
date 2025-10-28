@@ -9,7 +9,6 @@ import {
   CREATE_SESSION_ENDPOINT,
   WORKFLOW_ID,
   getThemeConfig,
-  ATTACHMENT_ACCEPT,
   HOSTED_COMPOSER_ATTACHMENTS,
 } from "@/lib/config";
 import { ErrorOverlay } from "./ErrorOverlay";
@@ -198,7 +197,6 @@ export function ChatKitPanel({
               // enable attachments with csv support
               file_upload: {
                 enabled: true,
-                accept: ATTACHMENT_ACCEPT,
               },
             },
           }),
