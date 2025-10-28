@@ -194,9 +194,10 @@ export function ChatKitPanel({
           body: JSON.stringify({
             workflow: { id: WORKFLOW_ID },
             chatkit_configuration: {
-              // enable attachments
+              // enable attachments with csv support
               file_upload: {
                 enabled: true,
+                accept: ATTACHMENT_ACCEPT,
               },
             },
           }),
@@ -275,8 +276,10 @@ export function ChatKitPanel({
     composer: {
       placeholder: PLACEHOLDER_INPUT,
       attachments: {
-        // Enable attachments
+        // Enable hosted file uploads with CSV/XLSX support
         enabled: true,
+        uploadStrategy: { type: "hosted" },
+        maxSize: 50 * 1024 * 1024,
         accept: ATTACHMENT_ACCEPT,
       },
     },
