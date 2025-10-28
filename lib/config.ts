@@ -5,22 +5,53 @@ import {
   ThemeOption,
 } from "@openai/chatkit";
 
-export const ATTACHMENT_ACCEPT: Record<string, string[]> = {
-  "image/*": [".png", ".jpg", ".jpeg", ".gif", ".webp"],
-  "text/csv": [".csv"],
-  "application/vnd.ms-excel": [".csv", ".xls"],
-  "text/plain": [".csv"],
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
-    ".xlsx",
-  ],
-};
+const ATTACHMENT_ACCEPT_SPECS: Array<{
+  mime: string;
+  extensions: string[];
+}> = [
+  { mime: "image/*", extensions: [".png", ".jpg", ".jpeg", ".gif", ".webp"] },
+  { mime: "text/csv", extensions: [".csv"] },
+  { mime: "application/csv", extensions: [".csv"] },
+  { mime: "application/vnd.ms-excel", extensions: [".csv", ".xls"] },
+  { mime: "text/plain", extensions: [".csv"] },
+  {
+    mime: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    extensions: [".xlsx"],
+  },
+  { mime: "application/zip", extensions: [".xlsx"] },
+  { mime: "application/octet-stream", extensions: [".xlsx"] },
+];
+
+const ATTACHMENT_ACCEPT_RECORD = ATTACHMENT_ACCEPT_SPECS.reduce<
+  Record<string, string[]>
+>((acc, spec) => {
+  acc[spec.mime] = spec.extensions;
+  return acc;
+}, {});
+
+const ATTACHMENT_ACCEPT_LIST = ATTACHMENT_ACCEPT_SPECS.reduce<string[]>(
+  (acc, spec) => {
+    acc.push(spec.mime);
+    for (const extension of spec.extensions) {
+      if (!acc.includes(extension)) {
+        acc.push(extension);
+      }
+    }
+    return acc;
+  },
+  []
+);
+
+export const ATTACHMENT_ACCEPT = ATTACHMENT_ACCEPT_LIST.join(",");
+
+export const ATTACHMENT_MAX_SIZE_BYTES = 50 * 1024 * 1024;
 
 export const HOSTED_COMPOSER_ATTACHMENTS: NonNullable<
   ComposerOption["attachments"]
 > = {
   enabled: true,
-  maxSize: 50 * 1024 * 1024,
-  accept: ATTACHMENT_ACCEPT,
+  maxSize: ATTACHMENT_MAX_SIZE_BYTES,
+  accept: ATTACHMENT_ACCEPT_RECORD,
 };
 
 export const WORKFLOW_ID =
