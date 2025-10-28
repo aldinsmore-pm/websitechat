@@ -15,13 +15,10 @@ export const ATTACHMENT_ACCEPT: Record<string, string[]> = {
   ],
 };
 
-type HostedComposerAttachments = NonNullable<ComposerOption["attachments"]> & {
-  uploadStrategy: { type: "hosted" };
-};
-
-export const HOSTED_COMPOSER_ATTACHMENTS: HostedComposerAttachments = {
+export const HOSTED_COMPOSER_ATTACHMENTS: NonNullable<
+  ComposerOption["attachments"]
+> = {
   enabled: true,
-  uploadStrategy: { type: "hosted" },
   maxSize: 50 * 1024 * 1024,
   accept: ATTACHMENT_ACCEPT,
 };
