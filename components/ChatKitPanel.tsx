@@ -10,6 +10,7 @@ import {
   WORKFLOW_ID,
   getThemeConfig,
   ATTACHMENT_ACCEPT,
+  HOSTED_COMPOSER_ATTACHMENTS,
 } from "@/lib/config";
 import { ErrorOverlay } from "./ErrorOverlay";
 import type { ColorScheme } from "@/hooks/useColorScheme";
@@ -194,9 +195,10 @@ export function ChatKitPanel({
           body: JSON.stringify({
             workflow: { id: WORKFLOW_ID },
             chatkit_configuration: {
-              // enable attachments
+              // enable attachments with csv support
               file_upload: {
                 enabled: true,
+                accept: ATTACHMENT_ACCEPT,
               },
             },
           }),
@@ -274,11 +276,7 @@ export function ChatKitPanel({
     },
     composer: {
       placeholder: PLACEHOLDER_INPUT,
-      attachments: {
-        // Enable attachments
-        enabled: true,
-        accept: ATTACHMENT_ACCEPT,
-      },
+      attachments: HOSTED_COMPOSER_ATTACHMENTS,
     },
     threadItemActions: {
       feedback: false,

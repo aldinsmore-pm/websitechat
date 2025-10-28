@@ -1,12 +1,29 @@
-import { ColorScheme, StartScreenPrompt, ThemeOption } from "@openai/chatkit";
+import {
+  ColorScheme,
+  ComposerOption,
+  StartScreenPrompt,
+  ThemeOption,
+} from "@openai/chatkit";
 
 export const ATTACHMENT_ACCEPT: Record<string, string[]> = {
   "image/*": [".png", ".jpg", ".jpeg", ".gif", ".webp"],
   "text/csv": [".csv"],
-  "application/vnd.ms-excel": [".xls"],
+  "application/vnd.ms-excel": [".csv", ".xls"],
+  "text/plain": [".csv"],
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
     ".xlsx",
   ],
+};
+
+type HostedComposerAttachments = NonNullable<ComposerOption["attachments"]> & {
+  uploadStrategy: { type: "hosted" };
+};
+
+export const HOSTED_COMPOSER_ATTACHMENTS: HostedComposerAttachments = {
+  enabled: true,
+  uploadStrategy: { type: "hosted" },
+  maxSize: 50 * 1024 * 1024,
+  accept: ATTACHMENT_ACCEPT,
 };
 
 export const WORKFLOW_ID =
