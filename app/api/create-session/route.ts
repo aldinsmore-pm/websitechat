@@ -1,14 +1,26 @@
-import { WORKFLOW_ID } from "@/lib/config";
+import { HOSTED_COMPOSER_ATTACHMENTS, WORKFLOW_ID } from "@/lib/config";
 
 export const runtime = "edge";
 
 interface ChatKitConfiguration {
   file_upload?: ChatKitFileUploadConfiguration;
+  response_downloads?: ChatKitResponseDownloadsConfiguration;
+  composer?: ChatKitComposerConfiguration;
   [key: string]: unknown;
 }
 
 interface ChatKitFileUploadConfiguration {
   enabled?: boolean;
+  [key: string]: unknown;
+}
+
+interface ChatKitResponseDownloadsConfiguration {
+  enabled?: boolean;
+  [key: string]: unknown;
+}
+
+interface ChatKitComposerConfiguration {
+  attachments?: typeof HOSTED_COMPOSER_ATTACHMENTS;
   [key: string]: unknown;
 }
 
@@ -74,7 +86,6 @@ export async function POST(request: Request): Promise<Response> {
       workflow: { id: resolvedWorkflowId },
       user: userId,
       chatkit_configuration: chatkitConfiguration,
-      response_downloads: { enabled: true },
     };
 
     const upstreamResponse = await fetch(url, {
@@ -160,7 +171,7 @@ function normalizeChatKitConfiguration(
     ...(configuration ?? {}),
   };
 
-  const fileUpload = configuration?.file_upload ?? {};
+  const fileUpload = normalized.file_upload ?? {};
   const { accept: _accept, ...restFileUpload } = fileUpload;
   void _accept;
 
@@ -170,6 +181,21 @@ function normalizeChatKitConfiguration(
       fileUpload.enabled === undefined
         ? true
         : Boolean(fileUpload.enabled),
+  };
+
+  const responseDownloads = normalized.response_downloads ?? {};
+  normalized.response_downloads = {
+    ...responseDownloads,
+    enabled:
+      responseDownloads.enabled === undefined
+        ? true
+        : Boolean(responseDownloads.enabled),
+  };
+
+  const composer = normalized.composer ?? {};
+  normalized.composer = {
+    ...composer,
+    attachments: composer.attachments ?? HOSTED_COMPOSER_ATTACHMENTS,
   };
 
   return normalized;
