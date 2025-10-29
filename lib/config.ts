@@ -5,11 +5,15 @@ import {
   ThemeOption,
 } from "@openai/chatkit";
 
-const ATTACHMENT_ACCEPT_SPECS: Array<{
+const IMAGE_ATTACHMENT_SPECS: Array<{
+  mime: string;
+  extensions: string[];
+}> = [{ mime: "image/*", extensions: [".png", ".jpg", ".jpeg", ".gif", ".webp"] }];
+
+const DATA_FILE_ATTACHMENT_SPECS: Array<{
   mime: string;
   extensions: string[];
 }> = [
-  { mime: "image/*", extensions: [".png", ".jpg", ".jpeg", ".gif", ".webp"] },
   { mime: "text/csv", extensions: [".csv"] },
   { mime: "application/csv", extensions: [".csv"] },
   { mime: "application/vnd.ms-excel", extensions: [".csv", ".xls"] },
@@ -22,15 +26,17 @@ const ATTACHMENT_ACCEPT_SPECS: Array<{
   { mime: "application/octet-stream", extensions: [".xlsx"] },
 ];
 
-const ATTACHMENT_ACCEPT_RECORD = ATTACHMENT_ACCEPT_SPECS.reduce<
-  Record<string, string[]>
->((acc, spec) => {
-  acc[spec.mime] = spec.extensions;
-  return acc;
-}, {});
+const toAcceptRecord = (
+  specs: Array<{ mime: string; extensions: string[] }>
+): Record<string, string[]> => {
+  return specs.reduce<Record<string, string[]>>((acc, spec) => {
+    acc[spec.mime] = spec.extensions;
+    return acc;
+  }, {});
+};
 
-const ATTACHMENT_ACCEPT_LIST = ATTACHMENT_ACCEPT_SPECS.reduce<string[]>(
-  (acc, spec) => {
+const toAcceptList = (specs: Array<{ mime: string; extensions: string[] }>) => {
+  return specs.reduce<string[]>((acc, spec) => {
     acc.push(spec.mime);
     for (const extension of spec.extensions) {
       if (!acc.includes(extension)) {
@@ -38,11 +44,8 @@ const ATTACHMENT_ACCEPT_LIST = ATTACHMENT_ACCEPT_SPECS.reduce<string[]>(
       }
     }
     return acc;
-  },
-  []
-);
-
-export const ATTACHMENT_ACCEPT = ATTACHMENT_ACCEPT_LIST.join(",");
+  }, []);
+};
 
 export const ATTACHMENT_MAX_SIZE_BYTES = 50 * 1024 * 1024;
 
@@ -51,8 +54,10 @@ export const HOSTED_COMPOSER_ATTACHMENTS: NonNullable<
 > = {
   enabled: true,
   maxSize: ATTACHMENT_MAX_SIZE_BYTES,
-  accept: ATTACHMENT_ACCEPT_RECORD,
+  accept: toAcceptRecord(IMAGE_ATTACHMENT_SPECS),
 };
+
+export const CSV_XLSX_ACCEPT = toAcceptList(DATA_FILE_ATTACHMENT_SPECS).join(",");
 
 export const WORKFLOW_ID =
   process.env.NEXT_PUBLIC_CHATKIT_WORKFLOW_ID?.trim() ?? "";
