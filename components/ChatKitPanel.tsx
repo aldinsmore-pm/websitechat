@@ -141,9 +141,6 @@ export function ChatKitPanel({
       file_upload: {
         enabled: true,
       },
-      composer: {
-        attachments: HOSTED_COMPOSER_ATTACHMENTS,
-      },
     }),
     []
   );

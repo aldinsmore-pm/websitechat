@@ -1,20 +1,14 @@
-import { HOSTED_COMPOSER_ATTACHMENTS, WORKFLOW_ID } from "@/lib/config";
+import { WORKFLOW_ID } from "@/lib/config";
 
 export const runtime = "edge";
 
 interface ChatKitConfiguration {
   file_upload?: ChatKitFileUploadConfiguration;
-  composer?: ChatKitComposerConfiguration;
   [key: string]: unknown;
 }
 
 interface ChatKitFileUploadConfiguration {
   enabled?: boolean;
-  [key: string]: unknown;
-}
-
-interface ChatKitComposerConfiguration {
-  attachments?: typeof HOSTED_COMPOSER_ATTACHMENTS;
   [key: string]: unknown;
 }
 
@@ -165,6 +159,10 @@ function normalizeChatKitConfiguration(
     ...(configuration ?? {}),
   };
 
+  if ("composer" in normalized) {
+    delete (normalized as Record<string, unknown>).composer;
+  }
+
   const fileUpload = normalized.file_upload ?? {};
   const { accept: _accept, ...restFileUpload } = fileUpload;
   void _accept;
@@ -175,12 +173,6 @@ function normalizeChatKitConfiguration(
       fileUpload.enabled === undefined
         ? true
         : Boolean(fileUpload.enabled),
-  };
-
-  const composer = normalized.composer ?? {};
-  normalized.composer = {
-    ...composer,
-    attachments: composer.attachments ?? HOSTED_COMPOSER_ATTACHMENTS,
   };
 
   return normalized;
