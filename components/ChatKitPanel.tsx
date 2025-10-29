@@ -1,6 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import type { ChangeEvent } from "react";
 import { ChatKit, useChatKit } from "@openai/chatkit-react";
 import {
   STARTER_PROMPTS,
@@ -10,6 +17,7 @@ import {
   WORKFLOW_ID,
   getThemeConfig,
   HOSTED_COMPOSER_ATTACHMENTS,
+  CSV_XLSX_ACCEPT,
 } from "@/lib/config";
 import { ErrorOverlay } from "./ErrorOverlay";
 import type { ColorScheme } from "@/hooks/useColorScheme";
@@ -62,6 +70,9 @@ export function ChatKitPanel({
       : "pending"
   );
   const [widgetInstanceKey, setWidgetInstanceKey] = useState(0);
+  const [isUploadingAttachment, setIsUploadingAttachment] = useState(false);
+  const [attachmentError, setAttachmentError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const setErrorState = useCallback((updates: Partial<ErrorState>) => {
     setErrors((current) => ({ ...current, ...updates }));
@@ -332,8 +343,73 @@ export function ChatKitPanel({
     },
   });
 
+  const handleAttachmentSelection = useCallback(
+    async (file: File | null) => {
+      if (!file) {
+        return;
+      }
+
+      setAttachmentError(null);
+      setIsUploadingAttachment(true);
+
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const response = await fetch("/api/upload-attachment", {
+          method: "POST",
+          body: formData,
+        });
+
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          const errorMessage = (payload as { error?: string }).error;
+          throw new Error(errorMessage || "Upload failed. Please try again.");
+        }
+
+        const attachment = (payload as {
+          attachment?: {
+            id: string;
+            mime_type: string;
+            name: string;
+            type: "file";
+          };
+        }).attachment;
+
+        if (!attachment) {
+          throw new Error("Upload succeeded but no attachment returned.");
+        }
+
+        await chatkit.setComposerValue({ text: "", attachments: [attachment] });
+        await chatkit.focusComposer?.();
+      } catch (error) {
+        console.error("Failed to upload attachment", error);
+        setAttachmentError(
+          error instanceof Error ? error.message : "Upload failed. Please try again."
+        );
+      } finally {
+        setIsUploadingAttachment(false);
+      }
+    },
+    [chatkit]
+  );
+
+  const handleFileInputChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const selectedFile = event.currentTarget.files?.[0] ?? null;
+      void handleAttachmentSelection(selectedFile);
+      event.currentTarget.value = "";
+    },
+    [handleAttachmentSelection]
+  );
+
+  const triggerFilePicker = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
+
   const activeError = errors.session ?? errors.integration;
   const blockingError = errors.script ?? activeError;
+  const disableAttachmentPicker = Boolean(blockingError) || isInitializingSession;
 
   if (isDev) {
     console.debug("[ChatKitPanel] render state", {
@@ -347,6 +423,31 @@ export function ChatKitPanel({
 
   return (
     <div className="relative pb-8 flex h-[90vh] w-full rounded-2xl flex-col overflow-hidden bg-white shadow-sm transition-colors dark:bg-slate-900">
+      <div className="z-10 flex flex-col gap-2 border-b border-slate-200 bg-white/90 p-4 text-sm dark:border-slate-700 dark:bg-slate-900/90">
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={triggerFilePicker}
+            disabled={disableAttachmentPicker || isUploadingAttachment}
+            className="inline-flex items-center gap-2 rounded-md border border-slate-300 px-3 py-2 font-medium text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800"
+          >
+            {isUploadingAttachment ? "Uploading…" : "Attach CSV/XLSX"}
+          </button>
+          <span className="text-xs text-slate-500 dark:text-slate-400">
+            Uploads are stored via OpenAI Files and added to your next message.
+          </span>
+        </div>
+        {attachmentError ? (
+          <p className="text-xs text-rose-600 dark:text-rose-400">{attachmentError}</p>
+        ) : null}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept={CSV_XLSX_ACCEPT}
+          className="hidden"
+          onChange={handleFileInputChange}
+        />
+      </div>
       <ChatKit
         key={widgetInstanceKey}
         control={chatkit.control}
