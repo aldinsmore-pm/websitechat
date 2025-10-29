@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ChatKit, useChatKit } from "@openai/chatkit-react";
 import {
   STARTER_PROMPTS,
@@ -136,6 +136,18 @@ export function ChatKitPanel({
     WORKFLOW_ID && !WORKFLOW_ID.startsWith("wf_replace")
   );
 
+  const chatkitConfiguration = useMemo(
+    () => ({
+      file_upload: {
+        enabled: true,
+      },
+      composer: {
+        attachments: HOSTED_COMPOSER_ATTACHMENTS,
+      },
+    }),
+    []
+  );
+
   useEffect(() => {
     if (!isWorkflowConfigured && isMountedRef.current) {
       setErrorState({
@@ -193,12 +205,7 @@ export function ChatKitPanel({
           },
           body: JSON.stringify({
             workflow: { id: WORKFLOW_ID },
-            chatkit_configuration: {
-              // enable attachments with csv support
-              file_upload: {
-                enabled: true,
-              },
-            },
+            chatkit_configuration: chatkitConfiguration,
           }),
         });
 
@@ -259,7 +266,7 @@ export function ChatKitPanel({
         }
       }
     },
-    [isWorkflowConfigured, setErrorState]
+    [chatkitConfiguration, isWorkflowConfigured, setErrorState]
   );
 
   const chatkit = useChatKit({

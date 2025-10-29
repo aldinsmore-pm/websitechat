@@ -1,8 +1,4 @@
-import {
-  ATTACHMENT_ACCEPT,
-  ATTACHMENT_MAX_SIZE_BYTES,
-  WORKFLOW_ID,
-} from "@/lib/config";
+import { WORKFLOW_ID } from "@/lib/config";
 
 export const runtime = "edge";
 
@@ -78,11 +74,6 @@ export async function POST(request: Request): Promise<Response> {
       workflow: { id: resolvedWorkflowId },
       user: userId,
       chatkit_configuration: chatkitConfiguration,
-      file_upload: {
-        enabled: chatkitConfiguration?.file_upload?.enabled ?? true,
-        accept: ATTACHMENT_ACCEPT,
-        max_file_size: ATTACHMENT_MAX_SIZE_BYTES,
-      },
       response_downloads: { enabled: true },
     };
 
