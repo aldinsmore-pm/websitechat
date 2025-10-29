@@ -4,17 +4,11 @@ export const runtime = "edge";
 
 interface ChatKitConfiguration {
   file_upload?: ChatKitFileUploadConfiguration;
-  response_downloads?: ChatKitResponseDownloadsConfiguration;
   composer?: ChatKitComposerConfiguration;
   [key: string]: unknown;
 }
 
 interface ChatKitFileUploadConfiguration {
-  enabled?: boolean;
-  [key: string]: unknown;
-}
-
-interface ChatKitResponseDownloadsConfiguration {
   enabled?: boolean;
   [key: string]: unknown;
 }
@@ -181,15 +175,6 @@ function normalizeChatKitConfiguration(
       fileUpload.enabled === undefined
         ? true
         : Boolean(fileUpload.enabled),
-  };
-
-  const responseDownloads = normalized.response_downloads ?? {};
-  normalized.response_downloads = {
-    ...responseDownloads,
-    enabled:
-      responseDownloads.enabled === undefined
-        ? true
-        : Boolean(responseDownloads.enabled),
   };
 
   const composer = normalized.composer ?? {};
