@@ -2,9 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = "nodejs";
 
-const MAX_UPLOAD_SIZE = 50 * 1024 * 1024; // 50MB
+const MAX_UPLOAD_SIZE = 50 * 1024 * 1024; // 50MB per file
+const MAX_FILES = 10;
 const FILE_FIELD_CANDIDATES = ["file", "upload", "attachment"] as const;
-const ALLOWED_MIME_TYPES = new Set([
+
+// Accept common CSV/XLS/XLSX variants browsers report
+const ALLOWED = [
   "text/csv",
   "application/csv",
   "application/vnd.ms-excel",
@@ -12,8 +15,8 @@ const ALLOWED_MIME_TYPES = new Set([
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
   "application/zip",
   "application/octet-stream",
-]);
-const EXTENSION_ALLOW_LIST = /\.(csv|xlsx|xls)$/i;
+];
+const EXT_OK = /\.(csv|xlsx|xls)$/i;
 
 function createErrorResponse(message: string, status = 400) {
   return NextResponse.json({ error: message }, { status });
@@ -25,16 +28,16 @@ async function uploadToOpenAI(file: File) {
     throw new Error("Missing OPENAI_API_KEY environment variable");
   }
 
-  const form = new FormData();
-  form.append("purpose", "assistants");
-  form.append("file", file, file.name || "file");
+  const fd = new FormData();
+  fd.append("purpose", "assistants");
+  fd.append("file", file, file.name || "file");
 
   const response = await fetch("https://api.openai.com/v1/files", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${apiKey}`,
     },
-    body: form,
+    body: fd,
   });
 
   const payload = await response.json().catch(() => undefined);
@@ -50,61 +53,61 @@ async function uploadToOpenAI(file: File) {
 }
 
 function normalizeFile(entry: FormDataEntryValue | null): File | null {
-  if (!entry || typeof entry === "string") {
-    return null;
-  }
-  return entry as File;
+  return entry && typeof entry !== "string" ? (entry as File) : null;
 }
 
 export async function POST(req: NextRequest) {
   try {
-    const formData = await req.formData();
+    const form = await req.formData();
 
-    let file: File | null = null;
+    const files: File[] = [];
     for (const field of FILE_FIELD_CANDIDATES) {
-      file = normalizeFile(formData.get(field));
-      if (file) {
-        break;
+      for (const entry of form.getAll(field)) {
+        const f = normalizeFile(entry);
+        if (f) {
+          files.push(f);
+        }
       }
     }
 
-    if (!file) {
+    if (files.length === 0) {
       return createErrorResponse("No file uploaded", 400);
     }
 
-    if (file.size === 0) {
-      return createErrorResponse("Uploaded file is empty", 400);
+    if (files.length > MAX_FILES) {
+      return createErrorResponse(`Too many files (max ${MAX_FILES}).`, 400);
     }
 
-    if (file.size > MAX_UPLOAD_SIZE) {
-      return createErrorResponse(
-        "File is too large. Maximum supported size is 50MB.",
-        400,
-      );
+    for (const file of files) {
+      if (!file.size) {
+        return createErrorResponse(`"${file.name}" is empty`, 400);
+      }
+
+      if (file.size > MAX_UPLOAD_SIZE) {
+        return createErrorResponse(
+          `"${file.name}" is too large. Max ${Math.floor(MAX_UPLOAD_SIZE / 1024 / 1024)}MB per file.`,
+          400,
+        );
+      }
+
+      if (!ALLOWED.includes(file.type) && !EXT_OK.test(file.name)) {
+        return createErrorResponse(
+          `"${file.name}" is unsupported. Upload .csv, .xls, or .xlsx.`,
+          400,
+        );
+      }
     }
 
-    const mimeType = file.type?.toLowerCase() ?? "";
-    const fileName = file.name ?? "";
-    const isMimeAllowed = mimeType ? ALLOWED_MIME_TYPES.has(mimeType) : false;
-    const isExtensionAllowed = EXTENSION_ALLOW_LIST.test(fileName);
+    const uploaded = await Promise.all(files.map(uploadToOpenAI));
 
-    if (!isMimeAllowed && !isExtensionAllowed) {
-      return createErrorResponse(
-        "Unsupported file type. Upload a .csv or .xlsx",
-        400,
-      );
-    }
-
-    const uploaded = await uploadToOpenAI(file);
-
-    const attachment = {
-      id: uploaded.id,
-      mime_type: file.type || "application/octet-stream",
-      name: file.name || "file",
+    const attachments = uploaded.map((u, index) => ({
+      id: u.id,
+      mime_type: files[index].type || "application/octet-stream",
+      name: files[index].name || "file",
       type: "file" as const,
-    };
+    }));
 
-    return NextResponse.json({ attachment }, { status: 200 });
+    return NextResponse.json({ attachments }, { status: 200 });
   } catch (error) {
     console.error("upload-attachment error", error);
     const message =

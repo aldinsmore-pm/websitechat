@@ -42,6 +42,13 @@ type ErrorState = {
   retryable: boolean;
 };
 
+type ComposerAttachment = {
+  id: string;
+  mime_type: string;
+  name: string;
+  type: "file";
+};
+
 const isBrowser = typeof window !== "undefined";
 const isDev = process.env.NODE_ENV !== "production";
 
@@ -343,9 +350,9 @@ export function ChatKitPanel({
     },
   });
 
-  const handleAttachmentSelection = useCallback(
-    async (file: File | null) => {
-      if (!file) {
+  const handleAttachmentsSelection = useCallback(
+    async (files: File[]) => {
+      if (!files.length) {
         return;
       }
 
@@ -353,37 +360,57 @@ export function ChatKitPanel({
       setIsUploadingAttachment(true);
 
       try {
-        const formData = new FormData();
-        formData.append("file", file);
+        const form = new FormData();
+        files.forEach((file) => form.append("file", file));
 
         const response = await fetch("/api/upload-attachment", {
           method: "POST",
-          body: formData,
+          body: form,
         });
 
-        const payload = await response.json().catch(() => ({}));
+        const payload = (await response
+          .json()
+          .catch(() => ({}))) as {
+          attachments?: ComposerAttachment[];
+          attachment?: ComposerAttachment;
+          error?: string;
+        };
         if (!response.ok) {
-          const errorMessage = (payload as { error?: string }).error;
-          throw new Error(errorMessage || "Upload failed. Please try again.");
+          throw new Error(payload.error || "Upload failed. Please try again.");
         }
 
-        const attachment = (payload as {
-          attachment?: {
-            id: string;
-            mime_type: string;
-            name: string;
-            type: "file";
-          };
-        }).attachment;
+        const newAttachments: ComposerAttachment[] =
+          payload.attachments ?? (payload.attachment ? [payload.attachment] : []);
 
-        if (!attachment) {
-          throw new Error("Upload succeeded but no attachment returned.");
+        if (!newAttachments.length) {
+          throw new Error("Upload succeeded but no attachments returned.");
         }
 
-        await chatkit.setComposerValue({ text: "", attachments: [attachment] });
+        const composerControls = chatkit as unknown as {
+          getComposerValue?: () => Promise<{
+            text?: string;
+            attachments?: ComposerAttachment[];
+          } | undefined>;
+        };
+        const currentComposer =
+          (typeof composerControls.getComposerValue === "function"
+            ? await composerControls.getComposerValue()
+            : undefined) ?? {};
+        const currentAttachments = Array.isArray(currentComposer.attachments)
+          ? (currentComposer.attachments as ComposerAttachment[])
+          : [];
+        const mergedAttachments = [
+          ...currentAttachments,
+          ...newAttachments,
+        ];
+
+        await chatkit.setComposerValue({
+          text: typeof currentComposer.text === "string" ? currentComposer.text : "",
+          attachments: mergedAttachments,
+        });
         await chatkit.focusComposer?.();
       } catch (error) {
-        console.error("Failed to upload attachment", error);
+        console.error("Failed to upload attachments", error);
         setAttachmentError(
           error instanceof Error ? error.message : "Upload failed. Please try again."
         );
@@ -396,11 +423,11 @@ export function ChatKitPanel({
 
   const handleFileInputChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
-      const selectedFile = event.currentTarget.files?.[0] ?? null;
-      void handleAttachmentSelection(selectedFile);
+      const files = Array.from(event.currentTarget.files ?? []);
+      void handleAttachmentsSelection(files);
       event.currentTarget.value = "";
     },
-    [handleAttachmentSelection]
+    [handleAttachmentsSelection]
   );
 
   const triggerFilePicker = useCallback(() => {
@@ -444,6 +471,7 @@ export function ChatKitPanel({
           ref={fileInputRef}
           type="file"
           accept={CSV_XLSX_ACCEPT}
+          multiple
           className="hidden"
           onChange={handleFileInputChange}
         />
